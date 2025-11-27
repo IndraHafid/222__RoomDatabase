@@ -1,5 +1,6 @@
 package com.example.myroom1p9.view.uicontroller
 
+import com.example.myroom1p9.view.EntrySiswaScreen
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -34,6 +35,11 @@ fun HostNavigasi(
             HomeScreen(
                 navigateToItemEntry = { navController.navigate(DestinasiEntry.route) },
             )
-
+        }
+        composable(route = DestinasiEntry.route) {
+            EntrySiswaScreen(
+                navigateBack = { navController.popBackStack() },
+            )
+        }
     }
 }
