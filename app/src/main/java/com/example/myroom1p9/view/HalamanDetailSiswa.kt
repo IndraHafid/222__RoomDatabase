@@ -13,6 +13,7 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.myroom1p9.R
+import com.example.myroom1p9.room.Siswa
 
 import com.example.myroom1p9.viewmodel.DetailSiswaUiState
 import com.example.myroom1p9.viewmodel.DetailViewModel
@@ -101,6 +102,57 @@ private fun BodyDetailDataSiswa(
                 modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium))
             )
         }
+    }
+}
+
+@Composable
+fun DetailDataSiswa(
+    siswa: Siswa, modifier: Modifier = Modifier
+) {
+    Card(
+        modifier = modifier, colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer,
+            contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+        )
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(dimensionResource(id = R.dimen.padding_medium)),
+            verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.padding_medium))
+        ) {
+            BarisDetailData(
+                labelResID = R.string.nama1,
+                itemDetail = siswa.nama,
+                modifier = Modifier.padding(
+                    horizontal = dimensionResource(
+                        id = R.dimen
+                            .padding_medium
+                    )
+                )
+            )
+            BarisDetailData(
+                labelResID = R.string.alamat1,
+                itemDetail = siswa.alamat,
+                modifier = Modifier.padding(
+                    horizontal = dimensionResource(
+                        id = R.dimen
+                            .padding_medium
+                    )
+                )
+            )
+            BarisDetailData(
+                labelResID = R.string.telpon1,
+                itemDetail = siswa.telpon,
+                modifier = Modifier.padding(
+                    horizontal = dimensionResource(
+                        id = R.dimen
+                            .padding_medium
+                    )
+                )
+            )
+        }
+
     }
 }
 
