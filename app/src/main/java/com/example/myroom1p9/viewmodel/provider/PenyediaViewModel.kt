@@ -1,34 +1,37 @@
-package com.example.myroom1p9.viewmodel
+package com.example.myroom1p9.viewmodel.provider
 
-import android.content.Context
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.example.myroom1p9.repositori.OfflineRepositoriSiswa
-import com.example.myroom1p9.room.DatabaseSiswa
+import androidx.lifecycle.viewmodel.CreationExtras
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
+import com.example.myroom1p9.repositori.ContainerApp
+import com.example.myroom1p9.viewmodel.EntryViewModel
+import com.example.myroom1p9.viewmodel.HomeViewModel
 
 object PenyediaViewModel {
+    val Factory = viewModelFactory {
 
-    fun provideFactory(context: Context): ViewModelProvider.Factory {
+        initializer {
 
-        val dao = DatabaseSiswa.getDatabase(context).siswaDao()
-        val repo = OfflineRepositoriSiswa(dao)
+            HomeViewModel(
 
-        return object : ViewModelProvider.Factory {
+                aplikasi().container.repositoriSiswa
+            )
+        }
 
-            @Suppress("UNCHECKED_CAST")
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return when {
-                    modelClass.isAssignableFrom(EntryViewModel::class.java) ->
-                        EntryViewModel(repo) as T
 
-                    modelClass.isAssignableFrom(HomeViewModel::class.java) ->
-                        HomeViewModel(repo) as T
+        initializer {
 
-                    else -> throw IllegalArgumentException(
-                        "Unknown ViewModel class: $modelClass"
-                    )
-                }
-            }
+            EntryViewModel(
+
+                aplikasi().container.repositoriSiswa
+            )
         }
     }
 }
+
+
+
+fun CreationExtras.aplikasi(): ContainerApp =
+
+    (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as ContainerApp)

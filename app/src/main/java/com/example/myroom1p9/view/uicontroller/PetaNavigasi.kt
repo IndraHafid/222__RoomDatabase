@@ -13,14 +13,12 @@ import com.example.myroom1p9.view.route.DestinasiEntry
 import com.example.myroom1p9.view.route.DestinasiHome
 
 @Composable
-fun SiswaApp(
-    navController: NavHostController = rememberNavController(),
-    modifier: Modifier = Modifier
-) {
+fun SiswaApp(navController: NavHostController = rememberNavController(), modifier: Modifier = Modifier) {
+
     HostNavigasi(navController = navController, modifier = modifier)
 }
 
-@OptIn(ExperimentalMaterial3Api::class) // Anotasi OptIn sudah benar
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HostNavigasi(
     navController: NavHostController,
@@ -31,15 +29,20 @@ fun HostNavigasi(
         startDestination = DestinasiHome.route,
         modifier = modifier
     ) {
+
         composable(route = DestinasiHome.route) {
             HomeScreen(
-                navigateToItemEntry = { navController.navigate(DestinasiEntry.route) },
+                navigateToItemEntry = { navController.navigate(route = DestinasiEntry.route) },
+
+                navigateToItemDetail = { id ->
+
+                    navController.navigate(route = DestinasiEntry.route)
+                }
             )
         }
+
         composable(route = DestinasiEntry.route) {
-            EntrySiswaScreen(
-                navigateBack = { navController.popBackStack() },
-            )
+            EntrySiswaScreen(navigateBack = { navController.popBackStack() })
         }
     }
 }

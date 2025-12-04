@@ -6,6 +6,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -13,38 +14,33 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.myroom1p9.R
 import com.example.myroom1p9.room.Siswa
+import com.example.myroom1p9.view.route.DestinasiHome
 import com.example.myroom1p9.view.route.DestinasiNavigasi
 import com.example.myroom1p9.viewmodel.HomeViewModel
-import com.example.myroom1p9.viewmodel.PenyediaViewModel
-
-object DestinasiHome : DestinasiNavigasi {
-    override val route = "home"
-    override val titleRes = R.string.app_name
-}
+import com.example.myroom1p9.viewmodel.provider.PenyediaViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     navigateToItemEntry: () -> Unit,
+    navigateToItemDetail: (Int) -> Unit,
     modifier: Modifier = Modifier,
-    onDetailClick: (Int) -> Unit = {},
     viewModel: HomeViewModel = viewModel(factory = PenyediaViewModel.Factory)
-) {
+){
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
-    val uiState by viewModel.homeUiState.collectAsState()
 
     Scaffold(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
-            // Ini sekarang akan valid setelah Anda membuat file AppBar.kt
             SiswaTopAppBar(
-                title = stringResource(DestinasiHome.titleRes),
+                title = stringResource(id = DestinasiHome.titleRes),
                 canNavigateBack = false,
                 scrollBehavior = scrollBehavior
             )
@@ -53,47 +49,48 @@ fun HomeScreen(
             FloatingActionButton(
                 onClick = navigateToItemEntry,
                 shape = MaterialTheme.shapes.medium,
-                modifier = Modifier.padding(18.dp)
-            ) {
+                modifier = Modifier.padding(all = dimensionResource(id = R.dimen.padding_large))
+            ){
                 Icon(
                     imageVector = Icons.Default.Add,
-                    contentDescription = stringResource(id = R.string.entry_siswa)
+                    contentDescription = stringResource(R.string.entry_siswa)
                 )
             }
         }
-    ) { innerPadding ->
-        HomeBody(
-            itemSiswa = uiState.listSiswa,
+    ){ innerPadding ->
+        val uiStateSiswa by viewModel.homeUiState.collectAsState()
+        BodyHome(
+            itemSiswa = uiStateSiswa.listSiswa,
+            onItemClick = navigateToItemDetail,
             modifier = Modifier
-                .padding(innerPadding)
-                .fillMaxSize(),
-            onSiswaClick = onDetailClick
+                .padding(paddingValues = innerPadding)
+                .fillMaxSize()
         )
     }
 }
 
 @Composable
-fun HomeBody(
+fun BodyHome(
     itemSiswa: List<Siswa>,
-    modifier: Modifier = Modifier,
-    onSiswaClick: (Int) -> Unit = {}
-) {
+    onItemClick: (Int) -> Unit,
+    modifier: Modifier = Modifier
+){
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
-    ) {
-        if (itemSiswa.isEmpty()) {
+    ){
+        if(itemSiswa.isEmpty()){
             Text(
-                text = stringResource(id = R.string.deskripsi_no_item),
+                text = stringResource(R.string.deskripsi_no_item),
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.titleLarge,
-                modifier = Modifier.padding(16.dp)
+                modifier = Modifier.padding(all = dimensionResource(id = R.dimen.padding_medium))
             )
         } else {
             ListSiswa(
                 itemSiswa = itemSiswa,
-                modifier = Modifier.padding(horizontal = 8.dp),
-                onItemClick = { onSiswaClick(it.id) }
+                onItemClick = onItemClick,
+                modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.padding_small))
             )
         }
     }
@@ -102,20 +99,17 @@ fun HomeBody(
 @Composable
 fun ListSiswa(
     itemSiswa: List<Siswa>,
-    modifier: Modifier = Modifier,
-    onItemClick: (Siswa) -> Unit
-) {
-    LazyColumn(
-        modifier = modifier,
-        contentPadding = PaddingValues(vertical = 8.dp)
-    ) {
-        items(items = itemSiswa, key = { it.id }) { person ->
-            DataSiswa(
-                siswa = person,
-                modifier = Modifier
-                    .padding(8.dp)
-                    .clickable { onItemClick(person) }
-            )
+    onItemClick: (Int) -> Unit,
+    modifier: Modifier = Modifier
+){
+    LazyColumn(modifier = modifier){
+        items(items = itemSiswa, key = { it.id }){
+                person -> DataSiswa(
+            siswa = person,
+            onItemClick = onItemClick,
+            modifier = Modifier
+                .padding(all = dimensionResource(id = R.dimen.padding_small))
+        )
         }
     }
 }
@@ -123,30 +117,40 @@ fun ListSiswa(
 @Composable
 fun DataSiswa(
     siswa: Siswa,
+    onItemClick: (Int) -> Unit,
     modifier: Modifier = Modifier
-) {
+){
     Card(
-        modifier = modifier,
+        modifier = modifier.clickable { onItemClick(siswa.id) },
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            Column(modifier = Modifier.weight(1f)) {
+    ){
+        Column(
+            modifier = Modifier.padding(all = dimensionResource(id = R.dimen.padding_large)),
+            verticalArrangement = Arrangement.spacedBy(
+                space = dimensionResource(id = R.dimen.padding_small)
+            )
+        ){
+            Row(
+                modifier = Modifier.fillMaxWidth()
+            ){
                 Text(
                     text = siswa.nama,
-                    style = MaterialTheme.typography.titleLarge,
+                    style = MaterialTheme.typography.titleLarge
                 )
-                Spacer(modifier = Modifier.weight(1f))
+                Spacer(Modifier.weight(weight = 1f))
+                Icon(
+                    imageVector = Icons.Default.Phone,
+                    contentDescription = null
+                )
                 Text(
-                    text = siswa.alamat,
+                    text = siswa.telpon,
                     style = MaterialTheme.typography.titleMedium
                 )
             }
+            Text(
+                text = siswa.alamat,
+                style = MaterialTheme.typography.titleMedium
+            )
         }
     }
 }
