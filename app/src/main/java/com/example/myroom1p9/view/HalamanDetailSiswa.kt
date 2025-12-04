@@ -1,10 +1,15 @@
 package com.example.myroom1p9.view
 
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.myroom1p9.R
 import com.example.myroom1p9.viewmodel.DetailViewModel
 import com.example.myroom1p9.viewmodel.provider.PenyediaViewModel
 import com.example.myroom1p9.view.route.DestinasiDetailSiswa
@@ -26,5 +31,17 @@ fun DetailSiswaScreen(
             )
         },
         floatingActionButton = {
+            val uiState = viewModel.uiDetailState.collectAsState()
+            FloatingActionButton(
+                onClick = { navigateToEditItem(uiState.value.detailSiswa.id) },
+                shape = MaterialTheme.shapes.medium,
+                modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_large))
+
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Edit,
+                    contentDescription = stringResource(R.string.update),
+                )
+            }
         }, modifier = modifier
     ) { innerPadding ->
